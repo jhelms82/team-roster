@@ -82,7 +82,6 @@
 
 
 
-
                 const q = query(collection(db, 'players'), where("name", "==", "Chandler"));
                     const querySnapshot = await getDocs(q);
                     querySnapshot.forEach((doc) => {
