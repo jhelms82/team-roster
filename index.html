@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Roster</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+ <h1>Team Roster</h1>   
+ <div class="content">
+     <form id="add-players-form">
+    <input type="text" name="name" placeholder="Name">
+
+    <button>Add Player</button>
+        </form>
+<ul id="players-list"></ul>
+     
+ </div>
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-firestore.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+        apiKey: "AIzaSyB9i3WN7NumEQADh5wuimKVyNQ-sRfC7Mo",
+        authDomain: "basketball-team-roster.firebaseapp.com",
+        projectId: "basketball-team-roster",
+        storageBucket: "basketball-team-roster.appspot.com",
+        messagingSenderId: "838207128050",
+        appId: "1:838207128050:web:1c3dfcecbf4e192a27ab6b",
+        measurementId: "G-PQ9WH1PYLH"
+    };
+
+    // Get a list of cities from your database
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    async function getPlayers(db) {
+        const playersCol = collection(db, 'players');
+        const playersSnapshot = await getDocs(playersCol);
+        const playersList = playersSnapshot.docs.map(doc => doc.data());
+        return playersList;
+    }
+
+    const playersList = document.querySelector('#players-list');
+    const form = document.querySelector('#add-players-form')
+
+    function renderPlayers(doc) {
+        let li = document.createElement("li");
+        let name = document.createElement("span");
+        let cross = document.createElement('div');
+
+
+        li.setAttribute('data-id', doc.id);
+        name.textContent = dc.data().name;
+        cross.textContent = 'x';
+
+
+        li.appendChild(name);
+        li.appendChild(cross);
+
+
+        PlayersList.appendChild(li);
+
+                    cross.addEventListener('click', (e) => {
+            e.stopPropagation();
+            let id = e.target.parentElement.getAttribute('data-id');
+            deleteDoc(doc(db, 'players', id))
+        })
+    }
+
+    const Players = getDocs(collection(db, 'players')).then((snapshot) => {
+            snapshot.forEach((doc) => {
+                renderPlayers(doc)
+            })
+        })
+
+
+
+
+                const q = query(collection(db, 'players'), where("name", "==", "Chandler"));
+                    const querySnapshot = await getDocs(q);
+                    querySnapshot.forEach((doc) => {
+                        console.log(doc.id, "=>", doc.data())
+                    })
+
+                    const upDoc = doc(db, 'players', "O4Vqjzm05UvykaRKpG0q");
+
+                    updateDoc(upDoc, {
+                        name: "Emberlee Helms"
+                    })
+
+                    form.addEventListener(('submit'), (e) => {
+                        e.preventDefault();
+                        const docRef = addDoc(collection(db, 'players'), {
+                           name: form.name.value,
+                        })
+                    })
+</script>
+
+ <script src="app.js"></script>
+</body>
+</html>
