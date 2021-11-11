@@ -10,12 +10,12 @@
 <body>
  <h1>Team Roster</h1>   
  <div class="content">
-     <form id="add-players-form">
+     <form id="add-player-form">
     <input type="text" name="name" placeholder="Name">
 
     <button>Add Player</button>
         </form>
-<ul id="players-list"></ul>
+<ul id="player-list"></ul>
      
  </div>
 <script type="module">
@@ -27,6 +27,7 @@
 
     // Your web app's Firebase configuration
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
     const firebaseConfig = {
         apiKey: "AIzaSyB9i3WN7NumEQADh5wuimKVyNQ-sRfC7Mo",
         authDomain: "basketball-team-roster.firebaseapp.com",
@@ -37,71 +38,64 @@
         measurementId: "G-PQ9WH1PYLH"
     };
 
-    // Get a list of cities from your database
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    async function getPlayers(db) {
-        const playersCol = collection(db, 'players');
-        const playersSnapshot = await getDocs(playersCol);
-        const playersList = playersSnapshot.docs.map(doc => doc.data());
-        return playersList;
-    }
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            async function getplayer(db) {
+                const playerCol = collection(db, "player");
+                const playerSnapshot = await getDocs(playersCol);
+                const playerList = playerSnapshot.docs.map((doc) => doc.data());
+                return playerList;
+            }
 
-    const playersList = document.querySelector('#players-list');
-    const form = document.querySelector('#add-players-form')
+            const playerList = document.querySelector('#player-list');
+            const form = document.querySelector('#add-player-form')
 
-    function renderPlayers(doc) {
-        let li = document.createElement("li");
-        let name = document.createElement("span");
-        let cross = document.createElement('div');
+            function renderPlayer(dc) {
+                let li = document.createElement("li");
+                let name = document.createElement("span");
+                let cross = document.createElement('div');
 
+                li.setAttribute('data-id', dc.id);
+                name.textContent = dc.data().name;
+                cross.textContent = 'Remove';
 
-        li.setAttribute('data-id', doc.id);
-        name.textContent = dc.data().name;
-        cross.textContent = 'x';
+                li.appendChild(name);
+                li.appendChild(cross);
 
+                playerList.appendChild(li);
 
-        li.appendChild(name);
-        li.appendChild(cross);
+                cross.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    let id = e.target.parentElement.getAttribute('data-id');
+                    deleteDoc(doc(db, "player", id))
+                })
+            }
 
-
-        PlayersList.appendChild(li);
-
-                    cross.addEventListener('click', (e) => {
-            e.stopPropagation();
-            let id = e.target.parentElement.getAttribute('data-id');
-            deleteDoc(doc(db, 'players', id))
-        })
-    }
-
-    const Players = getDocs(collection(db, 'players')).then((snapshot) => {
-            snapshot.forEach((doc) => {
-                renderPlayers(doc)
+            const player = getDocs(collection(db, "player")).then((snapshot) => {
+                snapshot.forEach((doc) => {
+                    renderPlayer(doc)
+                })
             })
-        })
 
+            const q = query(collection(db, "player"), where("name", "==", "Chandler Helms"));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                console.log(doc.id, "=>", doc.data())
+            })
 
+            const upDoc = doc(db, "player", "PnYtBBF2WrPssFxhiH8y");
 
-                const q = query(collection(db, 'players'), where("name", "==", "Chandler"));
-                    const querySnapshot = await getDocs(q);
-                    querySnapshot.forEach((doc) => {
-                        console.log(doc.id, "=>", doc.data())
-                    })
+            updateDoc(upDoc, {
+                name: "James Helms"
+            })
 
-                    const upDoc = doc(db, 'players', "O4Vqjzm05UvykaRKpG0q");
-
-                    updateDoc(upDoc, {
-                        name: "Emberlee Helms"
-                    })
-
-                    form.addEventListener(('submit'), (e) => {
-                        e.preventDefault();
-                        const docRef = addDoc(collection(db, 'players'), {
-                           name: form.name.value,
-                        })
-                    })
-</script>
-
- <script src="app.js"></script>
+            form.addEventListener(('submit'), (e) => {
+                e.preventDefault();
+                const docRef = addDoc(collection(db, "player"), {
+                    name: form.name.value
+                })
+            })
+        </script>
 </body>
 </html>
